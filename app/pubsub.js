@@ -2,12 +2,15 @@ const redis = require('redis');
 
 const CHANNELS ={
     TEST:'TEST',
-    BLOCKCHAIN: 'BLOCKCHAIN'
+    BLOCKCHAIN: 'BLOCKCHAIN',
+    TRANSACTION: 'TRANSACTION'
 };
 
 class PubSub {
-    constructor({blockchain}) {
+    constructor({blockchain,transactionPool,wallet}) {
         this.blockchain=blockchain;
+        this.transactionPool = transactionPool;
+        this.wallet = wallet;
         
         this.publisher= redis.createClient();
         this.subscriber = redis.createClient();
@@ -20,9 +23,24 @@ class PubSub {
     handleMessage(channel,message) {
         console.log(`message received. Channel: ${channel}. Message:${message}.`);
         const parsedMessage = JSON.parse(message);
-        //replace chain if the incoming blockchain is longer
-        if(channel===CHANNELS.BLOCKCHAIN) {
-            this.blockchain.replaceChain(parsedMessage);
+       
+        switch(channel) {
+            case CHANNELS.BLOCKCHAIN:  //replace chain if the incoming blockchain is longer
+                this.blockchain.replaceChain(parsedMessage);
+                break;
+            case CHANNELS.TRANSACTION:
+                /*handle pubsub edge case -> when creating 2 txn from the same wallet, 2nd txn returns an error because
+                pubnub does not prevent self-broadcasts.
+                pubnub does not take callback functionsto fire when subscribe/unsubscribe/publish functions complete as it happens
+                asynchronously. 
+                Self-broadcast/self-publish will overwrite the existing transaction instance
+                */
+                if(!this.transactionPool.existingTransaction({inputAddress: this.wallet.publicKey})) {
+                    this.transactionPool.setTransaction(parsedMessage);    
+                }
+                break;
+            default:
+                return;
         }
     }
     subcribeToChannels() {
@@ -50,6 +68,13 @@ class PubSub {
         this.publish({
             channel: CHANNELS.BLOCKCHAIN,
             message: JSON.stringify(this.blockchain.chain)
+        });
+    }
+    
+    broadcastTransaction(transaction) {
+        this.publish({
+            channel: CHANNELS.TRANSACTION,
+            message: JSON.stringify(transaction)
         });
     }
 }

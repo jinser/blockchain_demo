@@ -7,21 +7,22 @@
     ----------------------------------------------------------------- 
 
 
-Welcome to your Node.js project on Cloud9 IDE!
+###Pre-requisites:
 
-This chat example showcases how to use `socket.io` with a static `express` server.
+Install all dependencies in package.json
+`npm install`
+
+Install redis-stable from https://redis.io/topics/quickstart
+
+Requires Node v7 and above
+`node -v`
+`nvm ls`
+`nvm install X.X.X`
+`nvm use X.X.X`
 
 ## Running the server
 
-1) Open `server.js` and start the app by clicking on the "Run" button in the top menu.
+1) Running all test cases `npm run test`
 
-2) Alternatively you can launch the app from the Terminal:
 
-    $ node server.js
 
-Once the server is running, open the project in the shape of 'https://projectname-username.c9users.io/'. As you enter your name, watch the Users list (on the left) update. Once you press Enter or Send, the message is shared with all connected clients.
-
-Install all dependencies in package.json
-npm install
-Install redis-stable
-https://redis.io/topics/quickstart
