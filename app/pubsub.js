@@ -1,5 +1,6 @@
 const redis = require('redis');
 
+
 const CHANNELS ={
     TEST:'TEST',
     BLOCKCHAIN: 'BLOCKCHAIN',
@@ -26,7 +27,11 @@ class PubSub {
        
         switch(channel) {
             case CHANNELS.BLOCKCHAIN:  //replace chain if the incoming blockchain is longer
-                this.blockchain.replaceChain(parsedMessage);
+                this.blockchain.replaceChain(parsedMessage,true, ()=>{
+                    this.transactionPool.clearBlockchainTransactions({
+                        chain: parsedMessage
+                    });
+                });
                 break;
             case CHANNELS.TRANSACTION:
                 /*handle pubsub edge case -> when creating 2 txn from the same wallet, 2nd txn returns an error because
