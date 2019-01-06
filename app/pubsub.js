@@ -8,13 +8,13 @@ const CHANNELS ={
 };
 
 class PubSub {
-    constructor({blockchain,transactionPool,wallet}) {
+    constructor({blockchain,transactionPool,wallet,redisUrl}) {
         this.blockchain=blockchain;
         this.transactionPool = transactionPool;
         this.wallet = wallet;
         
-        this.publisher= redis.createClient();
-        this.subscriber = redis.createClient();
+        this.publisher= redis.createClient(redisUrl);
+        this.subscriber = redis.createClient(redisUrl);
         //this.subscriber.subscribe(CHANNELS.BLOCKCHAIN);
         this.subcribeToChannels();
         
