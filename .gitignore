@@ -1,0 +1,4 @@
+# Ignore React deployment files in .cache
+.cache/*
+client/dist/*
+
