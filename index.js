@@ -131,7 +131,7 @@ const walletTwoAction = () => generateWalletTransaction ({
 for(let i=0;i<10;i++) {
     if(i%3 === 0) {
         walletAction();
-        walletTwoAction();
+        walletOneAction();
     } else if(i%3 === 1) {
         walletAction();
         walletTwoAction();
@@ -150,7 +150,7 @@ let PEER_PORT;
 
 if(process.env.GENERATE_PEER_PORT==='true'){
     //PEER_PORT=DEFAULT_PORT + Math.ceil(Math.random() *1000);
-    PEER_PORT=8081 //since cloud9 restricts ports;
+    PEER_PORT=8082 //since cloud9 restricts ports;
 }
 const PORT = PEER_PORT || DEFAULT_PORT;
 app.listen(PORT,()=> {
