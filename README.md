@@ -6,8 +6,14 @@
      `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
     ----------------------------------------------------------------- 
 
+## Tech Stack built with TDD approach
+Node.js
+Express.js
+Redis
+Socket.io
+React.js
 
-###Pre-requisites:
+## Pre-requisites:
 
 Install all dependencies in package.json
 `npm install`
@@ -15,10 +21,10 @@ Install all dependencies in package.json
 Install redis-stable from https://redis.io/topics/quickstart
 
 Requires Node v7 and above
-`node -v` 
-`nvm ls` 
-`nvm install X.X.X` 
-`nvm use X.X.X`
+`node -v`  
+`nvm ls`  
+`nvm install X.X.X`  
+`nvm use X.X.X`  
 
 ## Running the server
 

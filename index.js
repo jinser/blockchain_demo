@@ -1,6 +1,9 @@
 const express = require('express');
 const request = require('request');
+const path = require('path');
 const bodyParser = require('body-parser');
+const cors = require('cors')
+
 const Blockchain = require('./blockchain/index');
 const PubSub = require('./app/pubsub');
 const TransactionPool = require('./wallet/transaction-pool');
@@ -8,6 +11,7 @@ const Wallet = require('./wallet');
 const TransactionMiner = require('./app/transaction-miner');
 
 const app = express();
+app.use(cors());
 const blockchain = new Blockchain();
 const transactionPool = new TransactionPool();
 const wallet = new Wallet();
@@ -18,6 +22,7 @@ const ROOT_NODE_ADDRESS = 'https://blockchain-lesson-jin-ser.c9users.io';
 //for running on cloud9 IDE, otherwise this should be `http://localhost:${DEFAULT_PORT}`
 
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname,'client/dist')));
 
 app.get('/api/blocks',(req,res)=>{
     res.json(blockchain.chain);
@@ -70,6 +75,10 @@ app.get('/api/wallet-info',(req,res)=>{
    });
 });
 
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname,'client/dist/index.html'));
+});
+
 const syncWithRootState = () => {
     request({url: `${ROOT_NODE_ADDRESS}/api/blocks` },(error,response,body) => {
         if(!error && response.statusCode === 200) {
@@ -87,6 +96,54 @@ const syncWithRootState = () => {
         }
     });
 }
+
+/*
+    Test Code to generate test blocks for Dev UI purposes
+*/
+const walletDemoOne =  new Wallet();
+const walletDemoTwo = new Wallet();
+
+const generateWalletTransaction = ({wallet,recipient,amount}) => {
+  const transaction = wallet.createTransaction({
+      recipient,
+      amount,
+      chain: blockchain.chain
+  });
+  transactionPool.setTransaction(transaction);
+};
+const walletAction = () => generateWalletTransaction ({
+    wallet,
+    recipient: walletDemoOne.publicKey,
+    amount: 5
+});
+
+const walletOneAction = () => generateWalletTransaction ({
+   wallet: walletDemoOne,
+   recipient: walletDemoTwo.publicKey,
+   amount: 10
+});
+const walletTwoAction = () => generateWalletTransaction ({
+   wallet: walletDemoTwo,
+   recipient: wallet.publicKey,
+   amount: 15
+});
+
+for(let i=0;i<10;i++) {
+    if(i%3 === 0) {
+        walletAction();
+        walletTwoAction();
+    } else if(i%3 === 1) {
+        walletAction();
+        walletTwoAction();
+    } else {
+        walletOneAction();
+        walletTwoAction();
+    }
+    transactionMiner.mineTransactions();
+}
+/*
+    END OF DEV CODE
+*/
 
 const DEFAULT_PORT = 8080;
 let PEER_PORT;
