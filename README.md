@@ -6,7 +6,7 @@
      `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
     ----------------------------------------------------------------- 
 
-#Demo of Blockchain Basics
+## Demo of Blockchain Basics  
 This demo includes the full-stack of a simple blockchain using Proof of Work (POW).
 
 ## Tech Stack built with TDD approach
